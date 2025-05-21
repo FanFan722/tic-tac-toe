@@ -1,4 +1,3 @@
-
 #ifndef TTT
 #define TTT
 #include <stdio.h>
@@ -8,7 +7,7 @@
 #include "m.h"
 
 int main(){
-    game();
+    fill_grid();
     return 0;
 }
 
