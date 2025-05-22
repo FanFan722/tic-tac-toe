@@ -7,12 +7,7 @@
 #include "m.h"
 
 int main(){
-    Player player1;
-    Player player2;
-    player1.sign = 'X';
-    player2.sign = 'O';
-    fill_grid();
-    place(&player1);
+    game_loop(&player1, &player2);
     return 0;
 }
 

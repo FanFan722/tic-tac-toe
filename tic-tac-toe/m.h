@@ -3,13 +3,8 @@
 #include "ttt.c"
 
 //define
-#define COLS 3
-#define ROWS 3
-
-//prototypes
-
-void ft_putchar(char c);
-void fill_grid();
+#define Y 3
+#define X 3
 
 //Structs
 
@@ -27,15 +22,31 @@ typedef struct PLAYER{
 
 }Player;
 
+//prototypes
+
+void ft_putchar(char c);
+void fill_grid();
+void place(Player *player);
+void check(Player *player);
+void init_player();
+bool check_win();
+bool check_draw();
+
 //variables
 
-char grid[ROWS][COLS] = {
+char grid[Y][X] = {
     {'1', '2', '3'}, 
     {'4', '5', '6'}, 
     {'7', '8', '9'}
 };
 
-void place (Player *player);
+Player player1;
+Player player2;
+
+int turn = 1;
+bool won = false;
+bool draw = false;
+
 //functions
 
 void ft_putchar(char c){
@@ -43,8 +54,8 @@ void ft_putchar(char c){
 }
 
 void fill_grid(){
-    for (int i = 0; i < ROWS; i++){
-        for (int j = 0; j < COLS; j++){
+    for (int i = 0; i < Y; i++){
+        for (int j = 0; j < X; j++){
             ft_putchar(grid[i][j]);
             ft_putchar(' ');
         }
@@ -53,9 +64,21 @@ void fill_grid(){
 }
 
 void check(Player *player){
-    if (grid[player->v2.x][player->v2.y] == 'O' || grid[player->v2.x][player->v2.y] == 'X'){
+    if (grid[player->v2.y][player->v2.x] == 'O' || grid[player->v2.y][player->v2.x] == 'X'){
         printf("emplacement already taken !");
         place(player);
+    }
+    else {
+        if (check_draw()){
+            draw = true;
+        }
+        else if (check_win()){
+            won = true;
+        }
+        else {
+            grid[player->v2.y][player->v2.x] = player->sign;
+        }
+        
     }
 } 
 
@@ -70,19 +93,75 @@ void place(Player *player){
         case 3 : player->v2.x = 2, player->v2.y = 0, check(player); break;
         case 4 : player->v2.x = 0, player->v2.y = 1, check(player); break;
         case 5 : player->v2.x = 1, player->v2.y = 1, check(player); break;
-        case 6 : player->v2.x = 1, player->v2.y = 2, check(player); break;
-        case 7 : player->v2.x = 2, player->v2.y = 0, check(player); break;
-        case 8 : player->v2.x = 2, player->v2.y = 1, check(player); break;
+        case 6 : player->v2.x = 2, player->v2.y = 1, check(player); break;
+        case 7 : player->v2.x = 0, player->v2.y = 2, check(player); break;
+        case 8 : player->v2.x = 1, player->v2.y = 2, check(player); break;
         case 9 : player->v2.x = 2, player->v2.y = 2, check(player); break;
     }
-    grid[player->v2.x][player->v2.y] = player->sign;
 }
 
-void init_player(){
-    Player player1;
-    Player player2;
-    player1.sign = 'X';
-    player2.sign = 'O';
+void init_player(Player *player1, Player *player2){
+    player1->sign = 'X';
+    player2->sign = 'O';
+}
+
+void game_loop(Player *player1, Player *player2){
+    while (won != true || draw != true){
+        init_player(player1, player2);
+        if (turn == 1){
+            fill_grid();
+            place(player1);
+            turn = 2;
+        }
+        else if (turn == 2){
+            fill_grid();
+            place(player2);
+            turn = 1;
+        }
+    }
+}
+
+bool check_draw(){
+    int count = 0;
+    for (int i = 0; i < Y; i ++){
+        for (int j = 0; j < X; j ++){
+            if (grid[i][j] == 'X' || grid[i][j] == 'O'){
+                count ++;
+            }
+        }
+    }
+    if (count >= 9){
+        return true;
+    }else {
+        return false;
+    }
+
+}
+
+bool check_win(){
+
+    //check columns
+
+    for (int i = 0; i < Y; i ++){
+        int countX = 0;
+        int countO = 0;
+        for (int j = 0; j < X; j ++){
+            if (grid[i][j] == 'X'){
+                countX += 1;
+                
+            }
+            else if (grid[i][j] == 'O'){
+                countO += 1;
+            }
+        }
+        if (countX >= 3){
+            return true;
+        }
+        else if (countO >= 3){
+            return true;
+        }
+    }
+    return false;
 }
 
 #endif
