@@ -27,10 +27,11 @@ typedef struct PLAYER{
 void ft_putchar(char c);
 void fill_grid();
 void place(Player *player);
-void check(Player *player);
+bool check_emplacement(Player *player);
 void init_player();
 bool check_win();
 bool check_draw();
+void check(Player *player);
 
 //variables
 
@@ -63,24 +64,28 @@ void fill_grid(){
     }
 }
 
-void check(Player *player){
+bool check_emplacement(Player *player){
     if (grid[player->v2.y][player->v2.x] == 'O' || grid[player->v2.y][player->v2.x] == 'X'){
-        printf("emplacement already taken !");
-        place(player);
-    }
-    else {
-        if (check_draw()){
-            draw = true;
-        }
-        else if (check_win()){
-            won = true;
-        }
-        else {
-            grid[player->v2.y][player->v2.x] = player->sign;
-        }
-        
+        return true;
+    }else {
+        return false;
     }
 } 
+
+void check(Player *player){
+    if(check_emplacement(player)){
+        printf("This emplacement is already taken !");
+        place(player);
+    }else if (check_draw()){
+        printf("DRAW !!!");
+        draw = true;
+    }else if (check_win()){
+        printf("%c won !", player->sign);
+        won = true;
+    }else {
+        grid[player->v2.y][player->v2.x] = player->sign;
+    }
+}
 
 void place(Player *player){
     char c = player->sign;
@@ -161,6 +166,7 @@ bool check_win(){
             return true;
         }
     }
+
     return false;
 }
 
